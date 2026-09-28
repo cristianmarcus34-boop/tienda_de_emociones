@@ -28,7 +28,11 @@ export default buildConfig({
   collections: [Users, Products, Media, Orders, Feedback],
   plugins: [
     vercelBlobStorage({
-      collections: { media: true },
+      collections: {
+        media: {
+          disableLocalStorage: true
+        }
+      },
       token: process.env.BLOB_READ_WRITE_TOKEN,
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       clientUploads: true
