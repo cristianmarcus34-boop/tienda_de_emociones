@@ -39,6 +39,7 @@ export function ProductCard({ product, index = 0 }: { product: StoreProduct; ind
             src={product.image}
             alt={product.alt}
             fill
+            unoptimized={product.image.startsWith("http")}
             sizes="(max-width: 520px) 44vw, (max-width: 760px) 45vw, (max-width: 1100px) 29vw, 22vw"
           />
         </Link>

@@ -42,7 +42,7 @@ export default async function ProductPage({
       <Link className="back-link" href="/#catalogo"><ArrowLeft size={15} /> Volver a la tienda</Link>
       <div className="product-detail">
         <div className="product-detail-image">
-          <Image src={product.image} alt={product.alt} fill priority sizes="(max-width: 760px) 90vw, 50vw" />
+          <Image src={product.image} alt={product.alt} fill priority unoptimized={product.image.startsWith("http")} sizes="(max-width: 760px) 90vw, 50vw" />
         </div>
         <div className="product-detail-copy">
           <span className="eyebrow"><span className="eyebrow-line" /> {categoryLabels[product.category] ?? product.category}</span>
