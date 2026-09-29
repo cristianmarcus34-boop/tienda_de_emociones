@@ -28,13 +28,15 @@ function toStoreProduct(product: PayloadProduct): StoreProduct {
     if (image.url.startsWith("http")) {
       // URL absoluta (Vercel Blob, Unsplash, etc.) → usarla tal cual
       imageURL = image.url;
-    } else if (!image.url.startsWith("/api/media/file/")) {
-      // Otra ruta relativa distinta al storage local → resolverla contra el sitio
-      const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-      imageURL = site ? `${site}${image.url}` : image.url;
+    } else {
+      // Ruta relativa (ej: /api/media/file/...) → resolver contra el dominio
+      const base = (
+        process.env.NEXT_PUBLIC_SERVER_URL ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        ""
+      ).replace(/\/$/, "");
+      imageURL = base ? `${base}${image.url}` : image.url;
     }
-    // Si empieza con "/api/media/file/" → es la URL rota del storage local.
-    // La ignoramos y dejamos el placeholder hasta arreglar la DB.
   }
 
   return {
