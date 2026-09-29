@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, CreditCard, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Copy, CreditCard, MessageCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "./cart-context";
 
@@ -10,85 +10,65 @@ type CheckoutFormProps = {
   onSuccess: () => void;
 };
 
-const mercadoPagoAlias = process.env.NEXT_PUBLIC_MERCADOPAGO_ALIAS?.trim();
+const mercadoPagoAlias = "PiesDescalzos";
+const mercadoPagoURL = "https://www.mercadopago.com.ar/";
 
 export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal } = useCart();
   const [provider, setProvider] = useState<"mercadopago" | "whatsapp">("mercadopago");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [aliasCopied, setAliasCopied] = useState(false);
+
+  async function copyAlias() {
+    setError("");
+    try {
+      await navigator.clipboard.writeText(mercadoPagoAlias);
+      setAliasCopied(true);
+      window.setTimeout(() => setAliasCopied(false), 1800);
+    } catch {
+      setError("No se pudo copiar el alias. Seleccionalo y copialo manualmente.");
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    if (provider === "mercadopago") {
+      window.location.assign(mercadoPagoURL);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
 
-    if (provider === "whatsapp") {
-      const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "");
-      if (!phone) {
-        setError("La tienda todavía no configuró su número de WhatsApp.");
-        return;
-      }
-      const lines = items.map(
-        ({ product, quantity }) => `• ${product.name} x${quantity} — ${formatPrice(product.price * quantity)}`
-      );
-      const message = [
-        `¡Hola! Soy ${name} y quiero hacer este pedido:`,
-        "",
-        ...lines,
-        "",
-        `Mi correo: ${email}`
-      ].join("\n");
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "");
+    if (!phone) {
+      setError("La tienda todavía no configuró su número de WhatsApp.");
       return;
     }
-
-    setLoading(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider,
-          name,
-          email,
-          items: items.map(({ product, quantity }) => ({
-            productId: product.id,
-            quantity,
-            unitPrice: product.price
-          }))
-        })
-      });
-      const result: unknown = await response.json();
-      if (!response.ok || typeof result !== "object" || result === null || !("url" in result) || typeof result.url !== "string") {
-        const message =
-          typeof result === "object" && result !== null && "error" in result && typeof result.error === "string"
-            ? result.error
-            : "No pudimos iniciar el pago. Intentá nuevamente.";
-        throw new Error(message);
-      }
-      clearCart();
-      window.location.assign(result.url);
-      onSuccess();
-    } catch (checkoutError) {
-      setError(checkoutError instanceof Error ? checkoutError.message : "Ocurrió un error al iniciar el pago.");
-      setLoading(false);
-    }
+    const lines = items.map(
+      ({ product, quantity }) => `• ${product.name} x${quantity} — ${formatPrice(product.price * quantity)}`
+    );
+    const message = [
+      `¡Hola! Soy ${name} y quiero hacer este pedido:`,
+      "",
+      ...lines,
+      "",
+      `Mi correo: ${email}`
+    ].join("\n");
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    onSuccess();
   }
 
   return (
     <form className="checkout-form" onSubmit={submit}>
       <button type="button" className="back-link" onClick={onBack}><ArrowLeft size={15} /> Volver al carrito</button>
       <p className="checkout-intro">
-        Completá tus datos. Para pagar, te vamos a llevar al sitio seguro de Mercado Pago.
-        El envío se coordina aparte.
+        {provider === "mercadopago"
+          ? "Copiá el alias, transferí el total desde Mercado Pago y coordinaremos el envío aparte."
+          : "Completá tus datos para enviar el pedido por WhatsApp. El envío se coordina aparte."}
       </p>
-      <label className="form-label" htmlFor="checkout-name">Nombre y apellido</label>
-      <input className="form-input" id="checkout-name" name="name" autoComplete="name" required maxLength={100} />
-      <label className="form-label" htmlFor="checkout-email">Correo electrónico</label>
-      <input className="form-input" id="checkout-email" name="email" type="email" autoComplete="email" required maxLength={254} />
       <fieldset className="payment-options">
         <legend className="form-label">Elegí cómo continuar</legend>
         <label className={`payment-option ${provider === "mercadopago" ? "selected" : ""}`}>
@@ -102,7 +82,7 @@ export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
           <span className="payment-provider-icon"><CreditCard size={18} /></span>
           <span>
             <strong>Pagar con Mercado Pago</strong>
-            <small>{mercadoPagoAlias ? `Alias: ${mercadoPagoAlias}` : "Elegí allí un medio de pago disponible"}</small>
+            <small>Transferencia por alias</small>
           </span>
         </label>
         <label className={`payment-option ${provider === "whatsapp" ? "selected" : ""}`}>
@@ -118,21 +98,41 @@ export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
         </label>
       </fieldset>
       {provider === "mercadopago" && (
-        <div className="payment-trust-note">
-          <ShieldCheck size={15} />
-          <span>El pago se completa en Mercado Pago; la tienda no guarda tus datos bancarios.</span>
-        </div>
+        <>
+          <div className="payment-alias-row">
+            <div className="payment-alias-value">
+              <span>Alias de la tienda</span>
+              <strong>{mercadoPagoAlias}</strong>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={copyAlias}>
+              {aliasCopied ? <Check size={14} /> : <Copy size={14} />}
+              {aliasCopied ? "Copiado" : "Copiar"}
+            </Button>
+          </div>
+          <div className="payment-trust-note">
+            <ShieldCheck size={15} />
+            <span>La transferencia no confirma el pedido automáticamente. Conservá el comprobante.</span>
+          </div>
+        </>
+      )}
+      {provider === "whatsapp" && (
+        <>
+          <label className="form-label" htmlFor="checkout-name">Nombre y apellido</label>
+          <input className="form-input" id="checkout-name" name="name" autoComplete="name" required maxLength={100} />
+          <label className="form-label" htmlFor="checkout-email">Correo electrónico</label>
+          <input className="form-input" id="checkout-email" name="email" type="email" autoComplete="email" required maxLength={254} />
+        </>
       )}
       <div className="checkout-total-row">
-        <span>Subtotal de productos</span>
+        <span>{provider === "mercadopago" ? "Total a transferir" : "Subtotal de productos"}</span>
         <strong>{formatPrice(subtotal)}</strong>
       </div>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <Button className="checkout-button" type="submit" disabled={loading}>
-        {loading ? "Conectando con Mercado Pago…" : provider === "whatsapp" ? "Enviar pedido" : "Pagar con Mercado Pago"}
+      <Button className="checkout-button" type="submit">
+        {provider === "whatsapp" ? "Enviar pedido" : "Abrir Mercado Pago"}
         {provider === "whatsapp" ? <MessageCircle size={16} /> : <ArrowRight size={16} />}
       </Button>
-      <span className="checkout-caption"><ShieldCheck size={13} /> Tus datos viajan de forma segura</span>
+      {provider === "whatsapp" && <span className="checkout-caption">Se abrirá WhatsApp con el detalle del pedido.</span>}
     </form>
   );
 }
