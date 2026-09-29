@@ -10,6 +10,8 @@ type CheckoutFormProps = {
   onSuccess: () => void;
 };
 
+const mercadoPagoAlias = process.env.NEXT_PUBLIC_MERCADOPAGO_ALIAS?.trim();
+
 export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
   const { items, subtotal, clearCart } = useCart();
   const [provider, setProvider] = useState<"mercadopago" | "whatsapp">("mercadopago");
@@ -100,7 +102,7 @@ export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
           <span className="payment-provider-icon"><CreditCard size={18} /></span>
           <span>
             <strong>Pagar con Mercado Pago</strong>
-            <small>Elegí allí un medio de pago disponible</small>
+            <small>{mercadoPagoAlias ? `Alias: ${mercadoPagoAlias}` : "Elegí allí un medio de pago disponible"}</small>
           </span>
         </label>
         <label className={`payment-option ${provider === "whatsapp" ? "selected" : ""}`}>
@@ -127,7 +129,7 @@ export function CheckoutForm({ onBack, onSuccess }: CheckoutFormProps) {
       </div>
       {error && <p className="form-error" role="alert">{error}</p>}
       <Button className="checkout-button" type="submit" disabled={loading}>
-        {loading ? "Conectando con Mercado Pago…" : provider === "whatsapp" ? "Enviar pedido" : "Ir a Mercado Pago"}
+        {loading ? "Conectando con Mercado Pago…" : provider === "whatsapp" ? "Enviar pedido" : "Pagar con Mercado Pago"}
         {provider === "whatsapp" ? <MessageCircle size={16} /> : <ArrowRight size={16} />}
       </Button>
       <span className="checkout-caption"><ShieldCheck size={13} /> Tus datos viajan de forma segura</span>
