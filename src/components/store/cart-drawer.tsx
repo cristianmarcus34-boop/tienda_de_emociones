@@ -46,7 +46,13 @@ export function CartDrawer({
             <div className="cart-items">
               {items.map(({ product, quantity }) => (
                 <div className="cart-item" key={product.id}>
-                  <Image src={product.image} alt={product.alt} width={76} height={88} />
+                  <Image
+                    src={product.image}
+                    alt={product.alt}
+                    width={76}
+                    height={88}
+                    unoptimized={product.image.startsWith("http")}
+                  />
                   <div className="cart-item-info">
                     <span className="product-category">{categoryLabels[product.category] ?? product.category}</span>
                     <h3>{product.name}</h3>
