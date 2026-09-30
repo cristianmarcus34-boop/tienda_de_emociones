@@ -165,15 +165,33 @@ export function StoreFooter() {
         <p>Un detalle puede cambiarlo todo.<br />Gracias por elegirnos para estar cerca.</p>
         <div className="footer-links">
           <Link className="footer-feedback-link" href="/#opiniones">Dejanos tu opinión</Link>
-           <Link className="footer-feedback-link" href="/admin">Administración</Link>
+          <Link className="footer-feedback-link" href="/admin">Administración</Link>
           <a className="footer-social" href="https://www.instagram.com/" target="_blank" rel="noreferrer">
             <Instagram size={17} /> Instagram
           </a>
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} Tienda de Emociones. Hecho con mucho amor.</span>
+        <span>© {new Date().getFullYear()} Tienda de Emociones.</span>
         <span>Regalos con intención, desde Argentina ♡</span>
+        <a
+          className="footer-powa"
+          href="https://www.agenciadigitalpowa.com.ar"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Desarrollo Digital Powa"
+        >
+          <span className="footer-powa-label">Desarrollo Digital</span>
+          <span className="footer-powa-brand">
+            <Image
+              src="/images/logo-powa.png"
+              alt="Powa"
+              width={90}
+              height={32}
+              className="footer-powa-logo"
+            />
+          </span>
+        </a>
       </div>
     </footer>
   );

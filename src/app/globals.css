@@ -981,8 +981,98 @@ p {
   justify-content: space-between;
   gap: 15px;
   color: #9a8e83;
-  border-top: 1px solid var(--line);
+  border-top: 0;
   font-size: 9px;
+}
+
+/* ===== Firma de agencia ===== */
+.footer-powa {
+  margin-top: 34px;
+  padding: 22px 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  border-top: 1px solid var(--line);
+  transition: border-color 220ms ease;
+}
+
+.footer-powa::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 42px;
+  height: 1px;
+  background: var(--coral);
+  transition: width 320ms cubic-bezier(.2, .7, .3, 1);
+}
+
+.footer-powa:hover::before {
+  width: 100%;
+}
+
+.footer-powa-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #9a8e83;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  transition: color 220ms ease;
+}
+
+.footer-powa-label::after {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+  opacity: .5;
+}
+
+.footer-powa-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fffdf9;
+  transition:
+    border-color 220ms ease,
+    background 220ms ease,
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.footer-powa:hover .footer-powa-brand {
+  border-color: #e3c5b7;
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(120, 80, 60, .08);
+}
+
+.footer-powa:hover .footer-powa-label {
+  color: var(--coral-dark);
+}
+
+.footer-powa-logo {
+  display: block;
+  width: auto;
+  height: 22px;
+  max-height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform 260ms cubic-bezier(.2, .7, .3, 1);
+}
+
+.footer-powa:hover .footer-powa-logo {
+  transform: scale(1.05);
 }
 
 .dialog-overlay {
@@ -2463,6 +2553,31 @@ p {
 
   .product-detail-copy h1 {
     font-size: 42px;
+  }
+
+  /* Firma de agencia — versión mobile */
+  .footer-powa {
+    margin-top: 24px;
+    padding: 18px 0 22px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .footer-powa-label {
+    font-size: 9px;
+    letter-spacing: .2em;
+  }
+
+  .footer-powa-brand {
+    padding: 6px 12px;
+  }
+
+  .footer-powa-logo {
+    height: 20px;
+    max-height: 20px;
   }
 }
 
