@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { StoreFooter } from "@/components/store/sections";
 import { StoreShell } from "@/components/store/store-shell";
-import "../globals.css";
+import "../../app/globals.css";
 
 export const metadata: Metadata = {
   title: {

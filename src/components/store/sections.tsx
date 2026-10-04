@@ -179,18 +179,16 @@ export function StoreFooter() {
           href="https://www.agenciadigitalpowa.com.ar"
           target="_blank"
           rel="noreferrer"
-          aria-label="Desarrollo Digital Powa"
+          aria-label="Desarrollo por Powa, agencia digital"
         >
-          <span className="footer-powa-label">Desarrollo Digital</span>
-          <span className="footer-powa-brand">
-            <Image
-              src="/images/logo-powa.png"
-              alt="Powa"
-              width={90}
-              height={32}
-              className="footer-powa-logo"
-            />
-          </span>
+          <span className="footer-powa-label">Desarrollo · Agencia Digital</span>
+          <Image
+            src="/images/logo-powa.png"
+            alt="Powa"
+            width={20}
+            height={20}
+            className="footer-powa-logo"
+          />
         </a>
       </div>
     </footer>
