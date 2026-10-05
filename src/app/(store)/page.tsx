@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
-import { CustomerFeedback, FollowUs, Hero, OurStory, TrustStrip } from "@/components/store/sections";
+import { CustomerFeedback, FAQSection, FollowUs, Hero, OurStory, TrustStrip } from "@/components/store/sections";
 import { ProductCatalog } from "@/components/store/product-catalog";
 import { searchProducts } from "@/lib/products";
 import { getPublishedFeedback } from "@/lib/feedback";
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/" }
+  title: "Regalos con intención para cada emoción",
+  description:
+    "Descubrí regalos personalizados, detalles emotivos y opciones para cada momento especial. Encuentra el detalle perfecto para regalar con significado.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Regalos con intención para cada emoción | Tienda de Emociones",
+    description:
+      "Encontrá regalos personalizados que acompañan cada emoción: celebraciones, agradecimientos, aniversarios y momentos inolvidables.",
+    url: "/"
+  }
 };
 
 export default async function HomePage({
@@ -26,6 +35,7 @@ export default async function HomePage({
       <TrustStrip />
       <ProductCatalog products={products} searchQuery={query} />
       <OurStory />
+      <FAQSection />
       <CustomerFeedback testimonials={testimonials} />
       <FollowUs />
     </main>

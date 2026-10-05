@@ -134,6 +134,43 @@ export function CustomerFeedback({ testimonials }: { testimonials: StoreTestimon
   );
 }
 
+export function FAQSection() {
+  const faqItems = [
+    {
+      question: "¿Cuáles son los tiempos de envío?",
+      answer:
+        "Realizamos envíos a todo el país y el costo y plazo se coordinan según la zona, la urgencia y el tipo de regalo elegido."
+    },
+    {
+      question: "¿Se puede incluir una dedicatoria personalizada?",
+      answer:
+        "Sí. En muchos productos podés agregar un mensaje o dedicación para que el detalle sea todavía más especial."
+    },
+    {
+      question: "¿Qué tipo de regalos ofrecen?",
+      answer:
+        "Tenemos propuestas para cumpleaños, aniversarios, agradecimientos, momentos románticos y detalles para hacer sentir a alguien querido."
+    }
+  ];
+
+  return (
+    <section className="section-wrap" id="preguntas-frecuentes" aria-labelledby="faq-title" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <span className="eyebrow"><span className="eyebrow-line" /> PREGUNTAS FRECUENTES</span>
+        <h2 id="faq-title">Todo lo que necesitás saber antes de regalar.</h2>
+      </div>
+      <div style={{ display: "grid", gap: "1rem" }}>
+        {faqItems.map((item) => (
+          <details key={item.question} style={{ border: "1px solid rgba(136, 80, 53, 0.12)", borderRadius: "18px", background: "rgba(255,255,255,0.65)", padding: "1rem 1.1rem" }}>
+            <summary style={{ cursor: "pointer", listStyle: "none", fontWeight: 600, color: "#3a2a22" }}>{item.question}</summary>
+            <p style={{ marginTop: "0.75rem", color: "#5a4338", lineHeight: 1.6 }}>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function FollowUs() {
   return (
     <section className="newsletter">

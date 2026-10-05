@@ -4,7 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Heart, Truck } from "lucide-react";
 import { AddToCartButton } from "@/components/store/add-to-cart-button";
+import { ProductSEO } from "@/components/store/seo";
 import { getProducts } from "@/lib/products";
+import { absoluteUrl } from "@/lib/site";
 import { categoryLabels } from "@/lib/demo-products";
 
 const currency = new Intl.NumberFormat("es-AR", {
@@ -21,10 +23,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = (await getProducts()).find((item) => item.slug === slug);
   if (!product) return { title: "Regalo no encontrado" };
+
+  const canonicalURL = absoluteUrl(`/productos/${product.slug}`);
+
   return {
     title: product.name,
     description: product.description,
-    openGraph: { images: [product.image] }
+    alternates: { canonical: canonicalURL },
+    keywords: [product.name, product.category, "regalo personalizado", "Tienda de Emociones"],
+    openGraph: {
+      title: `${product.name} | Tienda de Emociones`,
+      description: product.description,
+      url: canonicalURL,
+      images: [{ url: product.image, alt: product.alt }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} | Tienda de Emociones`,
+      description: product.description,
+      images: [product.image]
+    }
   };
 }
 
@@ -38,26 +56,38 @@ export default async function ProductPage({
   if (!product) notFound();
 
   return (
-    <main className="product-page section-wrap">
-      <Link className="back-link" href="/#catalogo"><ArrowLeft size={15} /> Volver a la tienda</Link>
-      <div className="product-detail">
-        <div className="product-detail-image">
-          <Image src={product.image} alt={product.alt} fill priority unoptimized={product.image.startsWith("http")} sizes="(max-width: 760px) 90vw, 50vw" />
+    <>
+      <ProductSEO
+        product={{
+          name: product.name,
+          description: product.description,
+          slug: product.slug,
+          category: product.category,
+          image: product.image,
+          price: product.price
+        }}
+      />
+      <main className="product-page section-wrap">
+        <Link className="back-link" href="/#catalogo"><ArrowLeft size={15} /> Volver a la tienda</Link>
+        <div className="product-detail">
+          <div className="product-detail-image">
+            <Image src={product.image} alt={product.alt} fill priority unoptimized={product.image.startsWith("http")} sizes="(max-width: 760px) 90vw, 50vw" />
+          </div>
+          <div className="product-detail-copy">
+            <span className="eyebrow"><span className="eyebrow-line" /> {categoryLabels[product.category] ?? product.category}</span>
+            <h1>{product.name}</h1>
+            <strong className="detail-price">{currency.format(product.price)}</strong>
+            <p>{product.description}</p>
+            <p className="detail-copy-extra">
+              Preparado con dedicación para que regalarlo sea parte de un momento especial.
+              Escribinos si querés incluir una dedicatoria personalizada.
+            </p>
+            <AddToCartButton product={product} />
+            <span className="detail-shipping"><Truck size={17} /> Envíos a todo el país. El costo se coordina al confirmar.</span>
+            <span className="detail-shipping"><Heart size={17} /> Cada pedido se prepara con mucho amor.</span>
+          </div>
         </div>
-        <div className="product-detail-copy">
-          <span className="eyebrow"><span className="eyebrow-line" /> {categoryLabels[product.category] ?? product.category}</span>
-          <h1>{product.name}</h1>
-          <strong className="detail-price">{currency.format(product.price)}</strong>
-          <p>{product.description}</p>
-          <p className="detail-copy-extra">
-            Preparado con dedicación para que regalarlo sea parte de un momento especial.
-            Escribinos si querés incluir una dedicatoria personalizada.
-          </p>
-          <AddToCartButton product={product} />
-          <span className="detail-shipping"><Truck size={17} /> Envíos a todo el país. El costo se coordina al confirmar.</span>
-          <span className="detail-shipping"><Heart size={17} /> Cada pedido se prepara con mucho amor.</span>
-        </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
